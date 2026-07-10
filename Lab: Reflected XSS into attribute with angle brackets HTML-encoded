@@ -1,0 +1,79 @@
+# Lab: Reflected XSS into attribute with angle brackets HTML-encoded
+
+## Overview
+
+This lab demonstrates a **Reflected Cross-Site Scripting (XSS)** vulnerability where user input is reflected inside an HTML attribute.
+
+Although the application encodes the angle brackets (`<` and `>`), the input is still inserted into the `value` attribute without proper context-aware escaping.
+
+---
+
+## Vulnerability
+
+The application renders the search parameter like this:
+
+```html
+<input type="text" name="search" value="USER_INPUT">
+```
+
+The developer only encodes the angle brackets:
+
+```
+<  →  &lt;
+>  →  &gt;
+```
+
+This prevents injecting new HTML elements such as:
+
+```html
+<script>alert(1)</script>
+```
+
+However, it does **not** prevent breaking out of the `value` attribute.
+
+---
+
+## Exploitation
+
+By closing the current attribute and injecting a new event handler:
+
+```html
+" onmouseover="alert(1)
+```
+
+The HTML becomes:
+
+```html
+<input type="text" name="search" value="" onmouseover="alert(1)">
+```
+
+When the user moves the mouse over the input field, the JavaScript executes.
+
+---
+
+## Root Cause
+
+The application only encodes `<` and `>`.
+
+It does **not** properly escape quotation marks (`"`), allowing an attacker to:
+
+- Close the existing attribute.
+- Inject a new HTML attribute.
+- Execute JavaScript using an event handler.
+
+---
+
+## Key Takeaways
+
+- Encoding `<` and `>` alone is **not sufficient**.
+- User input inside HTML attributes requires **attribute context encoding**.
+- Event handlers such as `onmouseover`, `onclick`, and `onfocus` can lead to XSS if attackers can inject new attributes.
+
+---
+
+## Prevention
+
+- Escape quotation marks before inserting user input into HTML attributes.
+- Use context-aware output encoding.
+- Consider using frameworks that automatically escape user input.
+- Deploy a strong Content Security Policy (CSP) as an additional layer of defense.
