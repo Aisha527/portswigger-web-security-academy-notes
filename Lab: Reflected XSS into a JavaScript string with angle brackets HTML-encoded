@@ -1,0 +1,85 @@
+# Lab: Reflected XSS into a JavaScript string with angle brackets HTML-encoded
+
+## Overview
+
+This lab demonstrates a **Reflected Cross-Site Scripting (XSS)** vulnerability where user input is reflected inside a **JavaScript string**.
+
+Although the application encodes the angle brackets (`<` and `>`), the input is still inserted into a JavaScript string without proper context-aware escaping.
+
+---
+
+## Vulnerability
+
+The application renders the search parameter like this:
+
+```html
+<script>
+var searchTerms = 'USER_INPUT';
+trackSearch(searchTerms);
+</script>
+```
+
+The developer only encodes the angle brackets:
+
+```text
+<  →  &lt;
+>  →  &gt;
+```
+
+This prevents injecting HTML tags such as:
+
+```html
+<script>alert(1)</script>
+```
+
+However, it does **not** prevent breaking out of the JavaScript string.
+
+---
+
+## Exploitation
+
+By closing the existing string and injecting JavaScript:
+
+```javascript
+'-alert(1)-'
+```
+
+The JavaScript becomes:
+
+```javascript
+var searchTerms = ''-alert(1)-'';
+```
+
+When the browser executes the script, the injected `alert(1)` runs successfully.
+
+---
+
+## Root Cause
+
+The application only encodes `<` and `>`.
+
+It does **not** properly escape characters used inside JavaScript strings, such as the single quotation mark (`'`).
+
+This allows an attacker to:
+
+- Close the original JavaScript string.
+- Inject arbitrary JavaScript.
+- Resume the original script without causing a syntax error.
+
+---
+
+## Key Takeaways
+
+- Encoding `<` and `>` alone is **not sufficient** when user input is reflected inside JavaScript.
+- Always identify the **execution context** before choosing an XSS payload.
+- JavaScript contexts require **JavaScript string escaping**, not HTML encoding.
+- Breaking out of a JavaScript string can lead to arbitrary JavaScript execution.
+
+---
+
+## Prevention
+
+- Escape user input according to the **JavaScript context** before inserting it into scripts.
+- Avoid placing untrusted data directly inside JavaScript code.
+- Use context-aware output encoding.
+- Deploy a strong Content Security Policy (CSP) as an additional layer of defense.
