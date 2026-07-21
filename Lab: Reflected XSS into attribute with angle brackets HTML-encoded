@@ -1,5 +1,5 @@
 Lab- Reflected XSS into attribute with angle brackets HTML-encoded
-
+ 
 ## Overview
 
 This lab demonstrates a **Reflected Cross-Site Scripting (XSS)** vulnerability where user input is reflected inside an HTML attribute.
