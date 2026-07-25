@@ -37,7 +37,9 @@ admin
 %2561dmin
 Final Payload
 http://127.1/%2561dmin/delete?username=carlos
+
 Why it works
+
 127.1 resolves to 127.0.0.1, bypassing the blacklist.
 %2561 is decoded twice by the server, resulting in the character a.
 The blacklist checks the raw input before decoding, allowing the payload to pass.
